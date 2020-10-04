@@ -1,0 +1,3 @@
+# Züri Trash Bot
+
+
