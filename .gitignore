@@ -4,3 +4,8 @@ venv
 # config file with settings
 config.ini
 
+# user data
+src/trashbot_data
+
+ideas.md
+
