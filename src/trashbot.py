@@ -8,7 +8,8 @@ import urllib.request
 
 from datetime import datetime, date
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandler, Filters, MessageHandler, PicklePersistence, Updater
+from telegram.ext import CallbackQueryHandler, CommandHandler,\
+    ConversationHandler, Filters, MessageHandler, PicklePersistence, Updater
 
 # configure logger
 logging.basicConfig(
@@ -21,9 +22,10 @@ ZIPCODE, CONFUSED = range(2)
 
 
 def start(update, context):
-    """Handles /start command"""
-    update.message.reply_text(
-        "Waste collection in Zurich occurs on different days depending on you zip code.\n\nPlease share your 4 digit zip code with me.")
+    reply = "Waste collection in Zurich occurs on different days depending "\
+        "on you zip code.\n\n"\
+        "Please share your 4 digit zip code with me."
+    update.message.reply_text(reply)
 
     return ZIPCODE
 
@@ -39,20 +41,23 @@ def zip_handler(update, context):
             "Thank you! Setting your zip code to %s" % zip_code)
         return ConversationHandler.END
 
-    update.message.reply_text(
-        "I'm sorry, I didn't get that \U0001F61E\nPlease either share your 4 digit zip code or write /cancel to abort the conversation.")
+    reply = "I'm sorry, I didn't get that \U0001F61E\nPlease either share "\
+        "your 4 digit zip code or write /cancel to abort the conversation."
+    update.message.reply_text(reply)
     return ZIPCODE
 
 
 def help(update, context):
     """Handles /help command"""
-    update.message.reply_text("You are confused? Me too! Sorry \U0001F615")
+    update.message.reply_text("Are you confused? Me too! Sorry \U0001F615")
 
 
 def upcomming(update, context):
     if 'zip_code' not in context.user_data:
-        update.message.reply_text(
-            "Hang on!\n\nI need to know where you live before I can look up the calendar for you. Please use /start first to configure this.")
+        reply = "Hang on!\n\n"\
+            "I need to know where you live before I can look up the calendar "\
+            "\U0001F4C5 for you. Please use /start to configure this."
+        update.message.reply_text(reply)
         return
 
     keyboard = [[InlineKeyboardButton("\U0001F4F0", callback_data='paper'),
@@ -67,12 +72,11 @@ def upcomming(update, context):
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     update.message.reply_text(
-        'What do you want to throw away?:', reply_markup=reply_markup)
+        'What do you want to throw away?', reply_markup=reply_markup)
 
 
 def button(update, context):
     query = update.callback_query
-
     query.answer()
 
     name = {
@@ -83,15 +87,21 @@ def button(update, context):
         "etram": "E-tram \U0001F68B"
     }
 
+    zip = context.user_data.get('zip_code', 'undefined')
+    today = datetime.today().strftime('%Y-%m-%d')
+    limit = 1
+
     baseurl = "http://openerz.metaodi.ch/api/calendar"
-    openerz = "%s/%s.json?zip=%s&start=%s&offset=0&limit=1" % (
-        baseurl, query.data, context.user_data['zip_code'], datetime.today().strftime('%Y-%m-%d'))
+    openerz = "%s/%s.json?zip=%s&start=%s&limit=%s" % (baseurl, query.data,
+                                                       zip, today, limit)
 
     with urllib.request.urlopen(openerz) as url:
         data = json.loads(url.read().decode())
         if data['_metadata']['total_count'] == 0:
-            query.edit_message_text("I couldn't find any %s in your area \U0001F62D (zip code = %s).\n\nIf you think your zip code is wrong, use /start to configure a new one." % (
-                name[query.data], context.user_data['zip_code']))
+            error_msg = "I couldn't find any %s in your area \U0001F62D "\
+                "(zip code = %s).\n\nIf you think your zip code is wrong, "\
+                "use /start to configure a new one." % (name[query.data], zip)
+            query.edit_message_text(error_msg)
             return
 
         next_date = date.fromisoformat(
@@ -113,14 +123,31 @@ def cancel(update, context):
 
 def settings(update, context):
     zip = context.user_data.get('zip_code', 'undefined')
-    update.message.reply_text(
-        "I store only very few settings. Currently, I know the following about you:\n\n\t\U00002022 zip code: %s\n\nIf you want to change your zip-code, use /start to configure a new one.\n\nUse /clear to remove all user data mentioned above." % zip)
+    reply = "Züri Trash Bot stores only very few settings.\n"\
+        "Currently, the bot know the following about you:\n\n"\
+        "\t\U00002022 zip code: %s\n\n"\
+        "If you want to change your zip-code, use /start to configure a new "\
+        "one.\n\nUse /clear to remove all user data mentioned above." % zip
+    update.message.reply_text(reply)
 
 
 def clear(update, context):
     context.user_data.clear()
-    update.message.reply_text(
-        "All user data cleared!\n\nYou will need to user /start again to configure your zip code.")
+    reply = "All user data cleared!\n\n"\
+        "You will need to user /start again to configure your zip code."
+    update.message.reply_text(reply)
+
+
+def about(update, context):
+    text = "Züri Trash Bot is an open-source project, see "\
+        "https://github.com/romanc\n\n"\
+        "Züri Trash Bot is made possible by\n"\
+        "\t\U00002022 https://github.com/python-telegram-bot\n"\
+        "\t\U00002022 http://openerz.metaodi.ch\n\n"\
+        "Kudos and keep up the nice work!\n\n"\
+        "This service is provided 'as is', without warranty of any kind."
+
+    update.message.reply_text(text)
 
 
 def trashbot(token):
@@ -134,7 +161,8 @@ def trashbot(token):
         entry_points=[CommandHandler('start', start)],
 
         states={
-            ZIPCODE: [MessageHandler(Filters.text & ~Filters.command, zip_handler)]
+            ZIPCODE: [MessageHandler(Filters.text & ~Filters.command,
+                                     zip_handler)]
         },
 
         fallbacks=[CommandHandler('cancel', cancel)]
@@ -145,12 +173,13 @@ def trashbot(token):
     myDispatcher.add_handler(CommandHandler("cancel", cancel))
     myDispatcher.add_handler(CommandHandler("settings", settings))
     myDispatcher.add_handler(CommandHandler("clear", clear))
+    myDispatcher.add_handler(CommandHandler("about", about))
+
+    myDispatcher.add_handler(CommandHandler("next", upcomming))
+    myDispatcher.add_handler(CallbackQueryHandler(button))
 
     myDispatcher.add_handler(MessageHandler(
         Filters.text & ~Filters.command, echo))
-
-    myDispatcher.add_handler(CommandHandler("upcomming", upcomming))
-    myDispatcher.add_handler(CallbackQueryHandler(button))
 
     updater.start_polling()
 
