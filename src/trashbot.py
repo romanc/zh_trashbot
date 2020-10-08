@@ -104,8 +104,8 @@ def button(update, context):
             query.edit_message_text(error_msg)
             return
 
-        next_date = date.fromisoformat(
-            data['result'][0]['date']).strftime('%a, %b %d %Y')
+        next_date = datetime.strptime(
+            data['result'][0]['date'], "%Y-%m-%d").strftime('%a, %b %d %Y')
 
     query.edit_message_text(text="Next %s in your area:\n%s" %
                             (name[query.data], next_date))
