@@ -6,7 +6,7 @@ import logging
 import re
 import urllib.request
 
-from datetime import datetime, date
+from datetime import datetime
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackQueryHandler, CommandHandler,\
     ConversationHandler, Filters, MessageHandler, PicklePersistence, Updater
@@ -92,8 +92,8 @@ def button(update, context):
     limit = 1
 
     baseurl = "http://openerz.metaodi.ch/api/calendar"
-    openerz = "%s/%s.json?zip=%s&start=%s&limit=%s" % (baseurl, query.data,
-                                                       zip, today, limit)
+    openerz = "%s/%s.json?sort=date&zip=%s&start=%s&limit=%s" % (baseurl,
+     query.data, zip, today, limit)
 
     with urllib.request.urlopen(openerz) as url:
         data = json.loads(url.read().decode())
