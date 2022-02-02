@@ -38,7 +38,8 @@ CURRENT_VERSION = "1.1.0"
 
 Whats_new = {
     "1.1.1":
-        ["Deprecated textile %s collection dates" % E_textile],
+        ["Deprecated textile %s collection dates" % E_textile,
+        "Minor code cleanups"],
     "1.1.0":
         ["Use /configure %s to set a query limit and see more the one collection date" % E_gear,
          "What's new messages %s" % E_grin,
@@ -127,6 +128,7 @@ def nextCommand(update, context):
 def queryButton(update, context):
     query = update.callback_query
     query.answer()
+    choice = query.data
 
     name = {
         "paper": "paper collection %s" % E_paper,
@@ -136,7 +138,7 @@ def queryButton(update, context):
         "etram": "E-tram %s" % E_tram
     }
 
-    if query.data == "textile":
+    if choice == "textile":
         textileException = "The city of Zurich stopped textile collections in "\
             "favor of an increased number of collection stations. You can also "\
             "bring your old cloths to Cargo-Tram %s.\n\n"\
@@ -149,12 +151,10 @@ def queryButton(update, context):
     limit = context.user_data.get('queryLimit', "1")
 
     baseurl = "http://openerz.metaodi.ch/api/calendar"
-    openerz = "%s/%s.json?sort=date&zip=%s&start=%s" % (baseurl, query.data,
+    openerz = "%s/%s.json?sort=date&zip=%s&start=%s" % (baseurl, choice,
                                                         zip, today)
-    if limit == "none":
-        openerz += "&limit=0"
-    else:
-        openerz += "&limit=%s" % limit
+    openerz += "&limit=0" if limit == "none" else "&limit=%s" % limit
+
 
     with urllib.request.urlopen(openerz) as url:
         data = json.loads(url.read().decode())
@@ -177,7 +177,7 @@ def queryButton(update, context):
             nextDate += "\t\U00002022 %s\n" % date
 
     query.edit_message_text(text="Next %s in your area:\n%s" %
-                            (name[query.data], nextDate))
+                            (name[choice], nextDate))
 
 
 def echo(update, context):
