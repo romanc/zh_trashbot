@@ -36,12 +36,14 @@ E_wave = "\U0001F44B"
 CHOOSE, HANDLE_LIMIT, ZIPCODE = range(3)
 CURRENT_VERSION = "1.1.0"
 
-Whats_new = {"1.1.0":
-             ["Use /configure %s to set a query limit and see more the one "
-              "collection date" % E_gear,
-              "What's new messages %s" % E_grin,
-              "Various text improvements",
-              "Some code cleanup"]}
+Whats_new = {
+    "1.1.1":
+        ["Deprecated textile %s collection dates" % E_textile],
+    "1.1.0":
+        ["Use /configure %s to set a query limit and see more the one collection date" % E_gear,
+         "What's new messages %s" % E_grin,
+         "Various text improvements",
+         "Some code cleanup"]}
 
 
 def newerVersionExists(userVersion):
@@ -82,7 +84,7 @@ def zipHandler(update, context):
         zip_code = zips[0]
         context.user_data['zip_code'] = zip_code
         msg = "Thank you! Setting your zip code to %s.\n\n"\
-            "Now try /next to check for wast collection dates." % zip_code
+            "Now try /next to check for waste collection dates." % zip_code
         update.message.reply_text(msg)
         return ConversationHandler.END
 
@@ -133,6 +135,14 @@ def queryButton(update, context):
         "cargotram": "cargo tram %s" % E_tram,
         "etram": "E-tram %s" % E_tram
     }
+
+    if query.data == "textile":
+        textileException = "The city of Zurich stopped textile collections in "\
+            "favor of an increased number of collection stations. You can also "\
+            "bring your old cloths to Cargo-Tram %s.\n\n"\
+            "For more information (in German) visit erz.ch/textilien." % E_tram
+        query.edit_message_text(text=textileException)
+        return
 
     zip = context.user_data.get('zip_code', 'undefined')
     today = datetime.today().strftime('%Y-%m-%d')

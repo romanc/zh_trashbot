@@ -1,10 +1,10 @@
 # Züri Trash Bot
 
-Züri Trash Bot is a [Telegram](https://telegram.org) bot, which offers a convenient way to query paper :newspaper:, cardboard :package:, and textile :shirt: collection dates for people living in Zurich. The bot also support querying dates :calendar: for the next cargo tram and E-tram :train:.
+Züri Trash Bot is a [Telegram](https://telegram.org) bot, which offers a convenient way to query paper :newspaper: and cardboard :package: collection dates for people living in Zurich. The bot also support querying dates :calendar: for the next cargo tram and E-tram :train:.
 
 ## Usage
 
-Visit https://t.me/zh_trashbot or use `@zh_trashbot` directly from within Telegram.
+Visit [https://t.me/zh_trashbot](https://t.me/zh_trashbot) or use `@zh_trashbot` directly from within Telegram.
 
 ## Deployment
 
