@@ -36,9 +36,10 @@ E_wave = "\U0001F44B"
 CHOOSE, HANDLE_LIMIT, ZIPCODE = range(3)
 CURRENT_VERSION = "1.1.0"
 
-Whats_new = {
-    "1.1.1":
-        ["Deprecated textile %s collection dates" % E_textile,
+WhatsNew = {
+    "1.2.0":
+        ["Use `/next %s` as a shortcut to query paper collections directly" % E_paper,
+        "Deprecated textile %s collection dates" % E_textile,
         "Minor code cleanups"],
     "1.1.0":
         ["Use /configure %s to set a query limit and see more the one collection date" % E_gear,
@@ -110,6 +111,22 @@ def nextCommand(update, context):
         update.message.reply_text(reply)
         return
 
+    paper = len(re.findall(r'[' + E_paper + ']', update.message.text))
+    if paper > 0:
+        nextDates = queryCollectionAPI("paper", context.user_data)
+        update.message.reply_text(nextDates)
+        return
+    cardboard = len(re.findall(r'[' + E_cardboard + ']', update.message.text))
+    if cardboard > 0:
+        nextDates = queryCollectionAPI("cardboard", context.user_data)
+        update.message.reply_text(nextDates)
+        return
+    textile = len(re.findall(r'[' + E_textile + ']', update.message.text))
+    if textile > 0:
+        nextDates = queryCollectionAPI("textile", context.user_data)
+        update.message.reply_text(nextDates)
+        return
+
     keyboard = [[InlineKeyboardButton(E_paper, callback_data='paper'),
                  InlineKeyboardButton(E_cardboard, callback_data='cardboard'),
                  InlineKeyboardButton(E_textile, callback_data='textile')],
@@ -125,11 +142,7 @@ def nextCommand(update, context):
         'What do you want to throw away?', reply_markup=reply_markup)
 
 
-def queryButton(update, context):
-    query = update.callback_query
-    query.answer()
-    choice = query.data
-
+def queryCollectionAPI(choice, user_data):
     name = {
         "paper": "paper collection %s" % E_paper,
         "cardboard": "cardboard collection %s" % E_cardboard,
@@ -143,41 +156,46 @@ def queryButton(update, context):
             "favor of an increased number of collection stations. You can also "\
             "bring your old cloths to Cargo-Tram %s.\n\n"\
             "For more information (in German) visit erz.ch/textilien." % E_tram
-        query.edit_message_text(text=textileException)
-        return
+        return textileException
 
-    zip = context.user_data.get('zip_code', 'undefined')
+    zip = user_data.get('zip_code', 'undefined')
+    limit = user_data.get('queryLimit', "1")
     today = datetime.today().strftime('%Y-%m-%d')
-    limit = context.user_data.get('queryLimit', "1")
 
     baseurl = "http://openerz.metaodi.ch/api/calendar"
     openerz = "%s/%s.json?sort=date&zip=%s&start=%s" % (baseurl, choice,
                                                         zip, today)
     openerz += "&limit=0" if limit == "none" else "&limit=%s" % limit
 
-
     with urllib.request.urlopen(openerz) as url:
         data = json.loads(url.read().decode())
         count = data['_metadata']['total_count']
         if count == 0:
-            error_msg = "I couldn't find any %s in your area %s "\
+            notFound = "I couldn't find any %s in your area %s "\
                 "(zip code = %s).\n\n"\
                 "Please note: Especially in December you might see no this "\
                 "message if the new year's data isn't publically available "\
                 "yet.\n\n"\
                 "If you think your zip code is wrong, use /start to "\
                 "configure a new one." % (E_cry, name[query.data], zip)
-            query.edit_message_text(error_msg)
-            return
+            return notFound
 
         nextDate = ""
         for result in data['result']:
             date = datetime.strptime(
                 result['date'], "%Y-%m-%d").strftime('%a, %b %d %Y')
             nextDate += "\t\U00002022 %s\n" % date
+        return "Next %s in your area:\n%s" % (name[choice], nextDate)
 
-    query.edit_message_text(text="Next %s in your area:\n%s" %
-                            (name[choice], nextDate))
+    return "Unable to contact openERZ api. Please try again later."
+
+
+def queryButton(update, context, selected=None):
+    query = update.callback_query
+    query.answer()
+
+    nextDates = queryCollectionAPI(query.data, context.user_data)
+    query.edit_message_text(text=nextDates)
 
 
 def echo(update, context):
@@ -329,7 +347,7 @@ def trashbot(token):
             # we have a newer version
             text = "Here's what's new in version %s %s\n\n" % (
                 CURRENT_VERSION, E_tada)
-            for note in Whats_new[CURRENT_VERSION]:
+            for note in WhatsNew[CURRENT_VERSION]:
                 text = text + ("\t\U00002022 %s\n" % note)
 
             # send a what's new message
