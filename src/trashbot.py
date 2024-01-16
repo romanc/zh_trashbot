@@ -162,8 +162,8 @@ def queryCollectionAPI(choice, user_data):
     limit = user_data.get('queryLimit', "1")
     today = datetime.today().strftime('%Y-%m-%d')
 
-    baseurl = "http://openerz.metaodi.ch/api/calendar"
-    openerz = "%s/%s.json?sort=date&zip=%s&start=%s" % (baseurl, choice,
+    baseurl = "http://openerz.metaodi.ch/api/calendar.json"
+    openerz = "%s?sort=date&types=%s&zip=%s&start=%s" % (baseurl, choice,
                                                         zip, today)
     openerz += "&limit=0" if limit == "none" else "&limit=%s" % limit
 
