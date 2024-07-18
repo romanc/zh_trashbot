@@ -39,6 +39,7 @@ CURRENT_VERSION = "1.1.0"
 WhatsNew = {
     "2.0.0": [
         "Removed deprecated query for discontinued textile %s collection. Bring your old cloths to the normal collection station." % E_textile,
+        "Fixed some typos",
     ],
     "1.2.0":
         ["Use `/next %s` as a shortcut to query paper collections directly" % E_paper,
@@ -155,18 +156,18 @@ def queryCollectionAPI(choice, user_data):
     today = datetime.today().strftime('%Y-%m-%d')
 
     baseurl = "http://openerz.metaodi.ch/api/calendar.json"
-    openerz = "%s?sort=date&types=%s&zip=%s&start=%s" % (baseurl, choice,
+    openERZ = "%s?sort=date&types=%s&zip=%s&start=%s" % (baseurl, choice,
                                                         zip, today)
-    openerz += "&limit=0" if limit == "none" else "&limit=%s" % limit
+    openERZ += "&limit=0" if limit == "none" else "&limit=%s" % limit
 
-    with urllib.request.urlopen(openerz) as url:
+    with urllib.request.urlopen(openERZ) as url:
         data = json.loads(url.read().decode())
         count = data['_metadata']['total_count']
         if count == 0:
             notFound = "I couldn't find any %s in your area %s "\
                 "(zip code = %s).\n\n"\
                 "Please note: Especially in December you might see no this "\
-                "message if the new year's data isn't publically available "\
+                "message if the new year's data isn't publicly available "\
                 "yet.\n\n"\
                 "If you think your zip code is wrong, use /start to "\
                 "configure a new one." % (E_cry, name[query.data], zip)
@@ -245,7 +246,7 @@ def handleQueryLimit(update, context):
     context.user_data["queryLimit"] = query.data
     reply = ""
     if query.data == "none":
-        reply = "Removed query limit - showing all remaining colletion dates "\
+        reply = "Removed query limit - showing all remaining collection dates "\
             "for each query in the future."
     else:
         reply = "Query limit is set to %s now." % query.data
@@ -356,7 +357,7 @@ def trashbot(token):
 
 
 if __name__ == '__main__':
-    logger.info("Parsing configfile")
+    logger.info("Parsing configuration file")
     config = configparser.ConfigParser()
     config.read("../config.ini")
 
