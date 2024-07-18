@@ -173,7 +173,7 @@ def queryCollectionAPI(choice, user_data):
                 "message if the new year's data isn't publicly available "\
                 "yet.\n\n"\
                 "If you think your zip code is wrong, use /start to "\
-                "configure a new one." % (E_cry, name[query.data], zip)
+                "configure a new one." % (E_cry, name[choice], zip)
             return notFound
 
         nextDate = ""
