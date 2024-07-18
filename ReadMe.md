@@ -20,3 +20,7 @@ You don't need to deploy the bot to use it. For using the bot, just follow the l
 - copy `config.ini.example` to `config.ini`,
 - get a [Telegram bot token](https://core.telegram.org/bots#creating-a-new-bot) and configure it in `config.ini`,
 - run `python trashbot.py`  from within the `src/` folder (or submit a PR to fix the fact that we currently have a hard-coded relative path to the config file)
+
+## VSCode setup
+
+Recommended extensions are Python language support and Code Spell Checker.
