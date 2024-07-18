@@ -13,10 +13,10 @@ dependencies = [
 readme = "README.md"
 license = {file = "LICENSE.txt"}
 authors = [
-    {name = "romanc"}
+    {name = "Roman Cattaneo"}
 ]
 maintainers = [
-    {name = "romanc"}
+    {name = "Roman Cattaneo"}
 ]
 keywords = ["Züri", "telegram", "bot", "waste", "trash", "collection", "recycling"]
 classifiers = [
