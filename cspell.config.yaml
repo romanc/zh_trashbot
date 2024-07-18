@@ -1,0 +1,16 @@
+version: "0.2"
+ignorePaths:
+  - .venv
+dictionaryDefinitions: []
+dictionaries: []
+words:
+  - Cattaneo
+  - trashbot
+  - venv
+  - Züri
+ignoreWords:
+  - cargotram
+  - etram
+  - levelname
+  - tada
+import: []

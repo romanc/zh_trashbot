@@ -19,3 +19,7 @@ Steps to deploy (a copy of) this bot include
 - get a [Telegram bot token](https://core.telegram.org/bots#creating-a-new-bot)
 - create a config file: `mv config.ini.example config.ini` and configure the token in it
 - run the bot: `uv run src/zh_trashbot/bot.py`
+
+## VSCode setup
+
+Recommended extensions are Python language support and Code Spell Checker.

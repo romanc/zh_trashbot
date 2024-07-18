@@ -176,11 +176,11 @@ def queryCollectionAPI(choice, user_data):
     today = datetime.today().strftime('%Y-%m-%d')
 
     baseurl = "http://openerz.metaodi.ch/api/calendar.json"
-    openerz = "%s?sort=date&types=%s&zip=%s&start=%s" % (baseurl, choice,
+    openERZ = "%s?sort=date&types=%s&zip=%s&start=%s" % (baseurl, choice,
                                                         zip, today)
-    openerz += "&limit=0" if limit == "none" else "&limit=%s" % limit
+    openERZ += "&limit=0" if limit == "none" else "&limit=%s" % limit
 
-    with urllib.request.urlopen(openerz) as url:
+    with urllib.request.urlopen(openERZ) as url:
         data = json.loads(url.read().decode())
         count = data['_metadata']['total_count']
         if count == 0:
