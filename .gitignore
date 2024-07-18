@@ -2,6 +2,9 @@
 venv
 .venv
 
+# ruff (linter / formatter) cache
+.ruff_cache
+
 # config file with settings
 config.ini
 

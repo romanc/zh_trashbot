@@ -23,4 +23,4 @@ You don't need to deploy the bot to use it. For using the bot, just follow the l
 
 ## VSCode setup
 
-Recommended extensions are Python language support and Code Spell Checker.
+Recommended extensions are [ruff](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff) and [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker).

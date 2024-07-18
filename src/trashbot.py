@@ -5,61 +5,75 @@ import json
 import logging
 import re
 import urllib.request
-
 from datetime import datetime
+
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackQueryHandler, CommandHandler,\
-    ConversationHandler, Filters, MessageHandler, PicklePersistence, Updater
+from telegram.ext import (
+    CallbackQueryHandler,
+    CommandHandler,
+    ConversationHandler,
+    Filters,
+    MessageHandler,
+    PicklePersistence,
+    Updater,
+)
 
 # configure logger
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO)
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 logger = logging.getLogger(__name__)
 
 # emojis
-E_blush = "\U0001F60A"
-E_broom = "\U0001F9F9"
-E_calendar = "\U0001F4C5"
-E_cardboard = "\U0001F4E6"
-E_cry = "\U0001F62D"
-E_disappointed = "\U0001F61E"
+E_blush = "\U0001f60a"
+E_broom = "\U0001f9f9"
+E_calendar = "\U0001f4c5"
+E_cardboard = "\U0001f4e6"
+E_cry = "\U0001f62d"
+E_disappointed = "\U0001f61e"
 E_gear = "\U00002699"
-E_grin = "\U0001F604"
-E_paper = "\U0001F4F0"
-E_tada = "\U0001F389"
-E_textile = "\U0001F455"
-E_tram = "\U0001F68B"
-E_unsure = "\U0001F615"
-E_wave = "\U0001F44B"
+E_grin = "\U0001f604"
+E_paper = "\U0001f4f0"
+E_tada = "\U0001f389"
+E_textile = "\U0001f455"
+E_tram = "\U0001f68b"
+E_unsure = "\U0001f615"
+E_wave = "\U0001f44b"
+
 
 CHOOSE, HANDLE_LIMIT, ZIPCODE = range(3)
 CURRENT_VERSION = "2.0.0"
 
 WhatsNew = {
     "2.0.0": [
-        "Removed deprecated query for discontinued textile %s collection. Bring your old cloths to the normal collection station." % E_textile,
+        "Removed deprecated query for discontinued textile %s collection. Bring your old cloths to the normal collection station."
+        % E_textile,
         "Fixed some typos",
     ],
     "1.2.1": [
         "Update to current version of openERZ API",
     ],
-    "1.2.0":
-        ["Use `/next %s` as a shortcut to query paper collections directly" % E_paper,
+    "1.2.0": [
+        "Use `/next %s` as a shortcut to query paper collections directly" % E_paper,
         "Deprecated textile %s collection dates" % E_textile,
-        "Minor code cleanups"],
-    "1.1.0":
-        ["Use /configure %s to set a query limit and see more the one collection date" % E_gear,
-         "What's new messages %s" % E_grin,
-         "Various text improvements",
-         "Some code cleanup"]}
+        "Minor code cleanups",
+    ],
+    "1.1.0": [
+        "Use /configure %s to set a query limit and see more the one collection date"
+        % E_gear,
+        "What's new messages %s" % E_grin,
+        "Various text improvements",
+        "Some code cleanup",
+    ],
+}
 
 
 def newerVersionExists(userVersion):
     (major, minor, patch) = userVersion.split(".")
     (cMajor, cMinor, cPatch) = CURRENT_VERSION.split(".")
-    return major < cMajor or (major == cMajor and (
-        minor < cMinor or (minor == cMinor and patch < cPatch)))
+    return major < cMajor or (
+        major == cMajor and (minor < cMinor or (minor == cMinor and patch < cPatch))
+    )
 
 
 def setDefaultUserData(context, key, value):
@@ -77,9 +91,11 @@ def startCommand(update, context):
     setDefaultUserData(context, "queryLimit", "1")
     setDefaultUserData(context, "version", CURRENT_VERSION)
 
-    reply = "Waste collection in Zurich occurs on different days depending "\
-        "on you zip code.\n\n"\
+    reply = (
+        "Waste collection in Zurich occurs on different days depending "
+        "on you zip code.\n\n"
         "Please share your 4 digit zip code with me."
+    )
     update.message.reply_text(reply)
 
     return ZIPCODE
@@ -91,15 +107,19 @@ def zipHandler(update, context):
 
     if len(zips) == 1:
         zip_code = zips[0]
-        context.user_data['zip_code'] = zip_code
-        msg = "Thank you! Setting your zip code to %s.\n\n"\
+        context.user_data["zip_code"] = zip_code
+        msg = (
+            "Thank you! Setting your zip code to %s.\n\n"
             "Now try /next to check for waste collection dates." % zip_code
+        )
         update.message.reply_text(msg)
         return ConversationHandler.END
 
-    reply = "I'm sorry, I didn't get that %s\nPlease either share "\
-        "your 4 digit zip code or write /cancel to abort the "\
+    reply = (
+        "I'm sorry, I didn't get that %s\nPlease either share "
+        "your 4 digit zip code or write /cancel to abort the "
         "conversation." % E_disappointed
+    )
     update.message.reply_text(reply)
     return ZIPCODE
 
@@ -110,20 +130,22 @@ def helpCommand(update, context):
 
 
 def nextCommand(update, context):
-    if 'zip_code' not in context.user_data:
-        reply = "Hang on!\n\n"\
-            "I need to know where you live before I can look up the "\
-            "calendar %s for you. Please use /start to configure your zip "\
+    if "zip_code" not in context.user_data:
+        reply = (
+            "Hang on!\n\n"
+            "I need to know where you live before I can look up the "
+            "calendar %s for you. Please use /start to configure your zip "
             "code." % E_calendar
+        )
         update.message.reply_text(reply)
         return
 
-    paper = len(re.findall(r'[' + E_paper + ']', update.message.text))
+    paper = len(re.findall(r"[" + E_paper + "]", update.message.text))
     if paper > 0:
         nextDates = queryCollectionAPI("paper", context.user_data)
         update.message.reply_text(nextDates)
         return
-    cardboard = len(re.findall(r'[' + E_cardboard + ']', update.message.text))
+    cardboard = len(re.findall(r"[" + E_cardboard + "]", update.message.text))
     if cardboard > 0:
         nextDates = queryCollectionAPI("cardboard", context.user_data)
         update.message.reply_text(nextDates)
@@ -131,19 +153,20 @@ def nextCommand(update, context):
 
     keyboard = [
         [
-            InlineKeyboardButton(E_paper, callback_data='paper'),
-            InlineKeyboardButton(E_cardboard, callback_data='cardboard'),
+            InlineKeyboardButton(E_paper, callback_data="paper"),
+            InlineKeyboardButton(E_cardboard, callback_data="cardboard"),
         ],
         [
-            InlineKeyboardButton("Cargo %s" % E_tram, callback_data='cargotram'),
-            InlineKeyboardButton("E - %s" % E_tram, callback_data='etram')
-        ]
+            InlineKeyboardButton("Cargo %s" % E_tram, callback_data="cargotram"),
+            InlineKeyboardButton("E - %s" % E_tram, callback_data="etram"),
+        ],
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     update.message.reply_text(
-        'What do you want to throw away?', reply_markup=reply_markup)
+        "What do you want to throw away?", reply_markup=reply_markup
+    )
 
 
 def queryCollectionAPI(choice, user_data):
@@ -151,35 +174,37 @@ def queryCollectionAPI(choice, user_data):
         "paper": "paper collection %s" % E_paper,
         "cardboard": "cardboard collection %s" % E_cardboard,
         "cargotram": "cargo tram %s" % E_tram,
-        "etram": "E-tram %s" % E_tram
+        "etram": "E-tram %s" % E_tram,
     }
 
-    zip = user_data.get('zip_code', 'undefined')
-    limit = user_data.get('queryLimit', "1")
-    today = datetime.today().strftime('%Y-%m-%d')
+    zip = user_data.get("zip_code", "undefined")
+    limit = user_data.get("queryLimit", "1")
+    today = datetime.today().strftime("%Y-%m-%d")
 
     baseurl = "http://openerz.metaodi.ch/api/calendar.json"
-    openERZ = "%s?sort=date&types=%s&zip=%s&start=%s" % (baseurl, choice,
-                                                        zip, today)
+    openERZ = "%s?sort=date&types=%s&zip=%s&start=%s" % (baseurl, choice, zip, today)
     openERZ += "&limit=0" if limit == "none" else "&limit=%s" % limit
 
     with urllib.request.urlopen(openERZ) as url:
         data = json.loads(url.read().decode())
-        count = data['_metadata']['total_count']
+        count = data["_metadata"]["total_count"]
         if count == 0:
-            notFound = "I couldn't find any %s in your area %s "\
-                "(zip code = %s).\n\n"\
-                "Please note: Especially in December you might see no this "\
-                "message if the new year's data isn't publicly available "\
-                "yet.\n\n"\
-                "If you think your zip code is wrong, use /start to "\
+            notFound = (
+                "I couldn't find any %s in your area %s "
+                "(zip code = %s).\n\n"
+                "Please note: Especially in December you might see no this "
+                "message if the new year's data isn't publicly available "
+                "yet.\n\n"
+                "If you think your zip code is wrong, use /start to "
                 "configure a new one." % (E_cry, name[choice], zip)
+            )
             return notFound
 
         nextDate = ""
-        for result in data['result']:
-            date = datetime.strptime(
-                result['date'], "%Y-%m-%d").strftime('%a, %b %d %Y')
+        for result in data["result"]:
+            date = datetime.strptime(result["date"], "%Y-%m-%d").strftime(
+                "%a, %b %d %Y"
+            )
             nextDate += "\t\U00002022 %s\n" % date
         return "Next %s in your area:\n%s" % (name[choice], nextDate)
 
@@ -205,14 +230,20 @@ def cancelCommand(update, context):
 
 
 def configureCommand(update, context):
-    opts = [[InlineKeyboardButton("Query limit", callback_data="queryLimit"),
-             InlineKeyboardButton("Cancel", callback_data="cancel")]]
+    opts = [
+        [
+            InlineKeyboardButton("Query limit", callback_data="queryLimit"),
+            InlineKeyboardButton("Cancel", callback_data="cancel"),
+        ]
+    ]
 
-    queryLimit = context.user_data.get('queryLimit', "1")
-    current = "Your current settings look like this:\n\n"\
-        "\t\U00002022 Query limit: %s\n\n"\
-        "What do you want to configure? If these settings look just fine, "\
+    queryLimit = context.user_data.get("queryLimit", "1")
+    current = (
+        "Your current settings look like this:\n\n"
+        "\t\U00002022 Query limit: %s\n\n"
+        "What do you want to configure? If these settings look just fine, "
         "use the cancel button." % (queryLimit)
+    )
 
     update.message.reply_text(current, reply_markup=InlineKeyboardMarkup(opts))
 
@@ -224,18 +255,22 @@ def chooseSetting(update, context):
     query.answer()
 
     if query.data == "queryLimit":
-        keyboard = [[InlineKeyboardButton("1", callback_data="1"),
-                     InlineKeyboardButton("2", callback_data="2"),
-                     InlineKeyboardButton("5", callback_data="5"),
-                     InlineKeyboardButton("all", callback_data="none")]]
-        text = "Okay, let's set the query limit. How many collections do you "\
+        keyboard = [
+            [
+                InlineKeyboardButton("1", callback_data="1"),
+                InlineKeyboardButton("2", callback_data="2"),
+                InlineKeyboardButton("5", callback_data="5"),
+                InlineKeyboardButton("all", callback_data="none"),
+            ]
+        ]
+        text = (
+            "Okay, let's set the query limit. How many collections do you "
             "want to see per query?"
-        query.edit_message_text(text=text,
-                                reply_markup=InlineKeyboardMarkup(keyboard))
+        )
+        query.edit_message_text(text=text, reply_markup=InlineKeyboardMarkup(keyboard))
         return HANDLE_LIMIT
     elif query.data == "cancel":
-        query.edit_message_text(
-            text="Keeping your settings as is. %s" % E_blush)
+        query.edit_message_text(text="Keeping your settings as is. %s" % E_blush)
         return ConversationHandler.END
 
     query.edit_message_text(text="I'm sorry, I can't find this setting.")
@@ -249,8 +284,10 @@ def handleQueryLimit(update, context):
     context.user_data["queryLimit"] = query.data
     reply = ""
     if query.data == "none":
-        reply = "Removed query limit - showing all remaining collection dates "\
+        reply = (
+            "Removed query limit - showing all remaining collection dates "
             "for each query in the future."
+        )
     else:
         reply = "Query limit is set to %s now." % query.data
 
@@ -259,35 +296,41 @@ def handleQueryLimit(update, context):
 
 
 def settingsCommand(update, context):
-    zip = context.user_data.get('zip_code', 'undefined')
-    limit = context.user_data.get('queryLimit', "1")
-    reply = "Züri Trash Bot stores only very few settings.\n"\
-        "Currently, the bot knows the following about you:\n\n"\
-        "\t\U00002022 zip code: %s\n"\
-        "\t\U00002022 query limit: %s\n\n"\
-        "If you want to change your zip-code, use /start to configure a new "\
-        "one.\n\n"\
-        "Use /configure to change any other setting.\n\n"\
+    zip = context.user_data.get("zip_code", "undefined")
+    limit = context.user_data.get("queryLimit", "1")
+    reply = (
+        "Züri Trash Bot stores only very few settings.\n"
+        "Currently, the bot knows the following about you:\n\n"
+        "\t\U00002022 zip code: %s\n"
+        "\t\U00002022 query limit: %s\n\n"
+        "If you want to change your zip-code, use /start to configure a new "
+        "one.\n\n"
+        "Use /configure to change any other setting.\n\n"
         "Use /clear to remove all user data mentioned above." % (zip, limit)
+    )
     update.message.reply_text(reply)
 
 
 def clearCommand(update, context):
     context.user_data.clear()
-    reply = "%s All user data cleared!\n\n"\
-        "You will need to use /start again to configure your zip "\
+    reply = (
+        "%s All user data cleared!\n\n"
+        "You will need to use /start again to configure your zip "
         "code." % E_broom
+    )
     update.message.reply_text(reply)
 
 
 def aboutCommand(update, context):
-    text = "Züri Trash Bot is an open-source project, see "\
-        "https://github.com/romanc/zh_trashbot\n\n"\
-        "Züri Trash Bot is made possible by\n"\
-        "\t\U00002022 https://github.com/python-telegram-bot\n"\
-        "\t\U00002022 http://openerz.metaodi.ch\n\n"\
-        "Kudos and keep up the nice work! "\
+    text = (
+        "Züri Trash Bot is an open-source project, see "
+        "https://github.com/romanc/zh_trashbot\n\n"
+        "Züri Trash Bot is made possible by\n"
+        "\t\U00002022 https://github.com/python-telegram-bot\n"
+        "\t\U00002022 http://openerz.metaodi.ch\n\n"
+        "Kudos and keep up the nice work! "
         "This service is provided 'as is', without warranty of any kind.\n"
+    )
 
     update.message.reply_text(text)
 
@@ -298,22 +341,17 @@ def trashbot(token):
     updater = Updater(token, persistence=pp, use_context=True)
 
     startConversation = ConversationHandler(
-        entry_points=[CommandHandler('start', startCommand)],
-
-        states={
-            ZIPCODE: [MessageHandler(Filters.text & ~Filters.command,
-                                     zipHandler)]
-        },
-
-        fallbacks=[CommandHandler('cancel', cancelCommand)]
+        entry_points=[CommandHandler("start", startCommand)],
+        states={ZIPCODE: [MessageHandler(Filters.text & ~Filters.command, zipHandler)]},
+        fallbacks=[CommandHandler("cancel", cancelCommand)],
     )
     configureConversation = ConversationHandler(
         entry_points=[CommandHandler("configure", configureCommand)],
         states={
             CHOOSE: [CallbackQueryHandler(chooseSetting)],
-            HANDLE_LIMIT: [CallbackQueryHandler(handleQueryLimit)]
+            HANDLE_LIMIT: [CallbackQueryHandler(handleQueryLimit)],
         },
-        fallbacks=[CommandHandler('cancel', cancelCommand)]
+        fallbacks=[CommandHandler("cancel", cancelCommand)],
     )
 
     myDispatcher = updater.dispatcher
@@ -329,8 +367,7 @@ def trashbot(token):
     myDispatcher.add_handler(CallbackQueryHandler(queryButton))
 
     # echo anything unknown
-    myDispatcher.add_handler(MessageHandler(
-        Filters.text & ~Filters.command, echo))
+    myDispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     userData = pp.get_user_data()
     chatData = pp.get_chat_data()
@@ -341,15 +378,17 @@ def trashbot(token):
 
         if newerVersionExists(thisUser.get("version", "1.0.2")):
             # we have a newer version
-            text = "Here's what's new in version %s %s\n\n" % (
-                CURRENT_VERSION, E_tada)
+            text = "Here's what's new in version %s %s\n\n" % (CURRENT_VERSION, E_tada)
             for note in WhatsNew[CURRENT_VERSION]:
                 text = text + ("\t\U00002022 %s\n" % note)
 
             # send a what's new message
-            updater.job_queue.run_once(whatsNewMessage, 2, context={
-                "chat_id": chatId, "text": text},
-                name="new%s" % str(chatId))
+            updater.job_queue.run_once(
+                whatsNewMessage,
+                2,
+                context={"chat_id": chatId, "text": text},
+                name="new%s" % str(chatId),
+            )
 
             # then, update current version
             myDispatcher.user_data[chatId]["version"] = CURRENT_VERSION
@@ -359,10 +398,10 @@ def trashbot(token):
     updater.idle()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger.info("Parsing configuration file")
     config = configparser.ConfigParser()
     config.read("../config.ini")
 
     logger.info("Running Züri Trash Bot")
-    trashbot(config['api.telegram.org']['token'])
+    trashbot(config["api.telegram.org"]["token"])
