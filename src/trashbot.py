@@ -37,6 +37,9 @@ CHOOSE, HANDLE_LIMIT, ZIPCODE = range(3)
 CURRENT_VERSION = "1.1.0"
 
 WhatsNew = {
+    "2.0.0": [
+        "Removed deprecated query for discontinued textile %s collection. Bring your old cloths to the normal collection station." % E_textile,
+    ],
     "1.2.0":
         ["Use `/next %s` as a shortcut to query paper collections directly" % E_paper,
         "Deprecated textile %s collection dates" % E_textile,
@@ -121,20 +124,17 @@ def nextCommand(update, context):
         nextDates = queryCollectionAPI("cardboard", context.user_data)
         update.message.reply_text(nextDates)
         return
-    textile = len(re.findall(r'[' + E_textile + ']', update.message.text))
-    if textile > 0:
-        nextDates = queryCollectionAPI("textile", context.user_data)
-        update.message.reply_text(nextDates)
-        return
 
-    keyboard = [[InlineKeyboardButton(E_paper, callback_data='paper'),
-                 InlineKeyboardButton(E_cardboard, callback_data='cardboard'),
-                 InlineKeyboardButton(E_textile, callback_data='textile')],
-
-                [InlineKeyboardButton("Cargo %s" % E_tram,
-                                      callback_data='cargotram'),
-                 InlineKeyboardButton("E - %s" % E_tram,
-                                      callback_data='etram')]]
+    keyboard = [
+        [
+            InlineKeyboardButton(E_paper, callback_data='paper'),
+            InlineKeyboardButton(E_cardboard, callback_data='cardboard'),
+        ],
+        [
+            InlineKeyboardButton("Cargo %s" % E_tram, callback_data='cargotram'),
+            InlineKeyboardButton("E - %s" % E_tram, callback_data='etram')
+        ]
+    ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -146,17 +146,9 @@ def queryCollectionAPI(choice, user_data):
     name = {
         "paper": "paper collection %s" % E_paper,
         "cardboard": "cardboard collection %s" % E_cardboard,
-        "textile": "textile collection %s" % E_textile,
         "cargotram": "cargo tram %s" % E_tram,
         "etram": "E-tram %s" % E_tram
     }
-
-    if choice == "textile":
-        textileException = "The city of Zurich stopped textile collections in "\
-            "favor of an increased number of collection stations. You can also "\
-            "bring your old cloths to Cargo-Tram %s.\n\n"\
-            "For more information (in German) visit erz.ch/textilien." % E_tram
-        return textileException
 
     zip = user_data.get('zip_code', 'undefined')
     limit = user_data.get('queryLimit', "1")
