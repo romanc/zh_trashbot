@@ -34,12 +34,15 @@ E_unsure = "\U0001F615"
 E_wave = "\U0001F44B"
 
 CHOOSE, HANDLE_LIMIT, ZIPCODE = range(3)
-CURRENT_VERSION = "1.1.0"
+CURRENT_VERSION = "2.0.0"
 
 WhatsNew = {
     "2.0.0": [
         "Removed deprecated query for discontinued textile %s collection. Bring your old cloths to the normal collection station." % E_textile,
         "Fixed some typos",
+    ],
+    "1.2.1": [
+        "Update to current version of openERZ API",
     ],
     "1.2.0":
         ["Use `/next %s` as a shortcut to query paper collections directly" % E_paper,
