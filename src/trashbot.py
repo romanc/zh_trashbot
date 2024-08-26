@@ -48,6 +48,7 @@ WhatsNew = {
     "2.0.0": [
         "Removed deprecated query for discontinued textile %s collection. Bring your old cloths to the normal collection station."
         % E_textile,
+        "Added profile picture and updated menu",
         "Fixed some typos",
     ],
     "1.2.1": [
