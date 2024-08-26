@@ -1,0 +1,15 @@
+version: "0.2"
+ignorePaths:
+  - .venv
+dictionaryDefinitions: []
+dictionaries: []
+words:
+  - trashbot
+  - venv
+  - Züri
+ignoreWords:
+  - cargotram
+  - etram
+  - levelname
+  - tada
+import: []
