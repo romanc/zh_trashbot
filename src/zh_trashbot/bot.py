@@ -39,6 +39,7 @@ CURRENT_VERSION = "1.2.2"
 WhatsNew = {
     "1.2.2": [
         "Software & project maintenance",
+        "Fixed typos",
     ],
     "1.2.1": [
         "Update to current version of openERZ API",
@@ -183,7 +184,7 @@ def queryCollectionAPI(choice, user_data):
             notFound = "I couldn't find any %s in your area %s "\
                 "(zip code = %s).\n\n"\
                 "Please note: Especially in December you might see no this "\
-                "message if the new year's data isn't publically available "\
+                "message if the new year's data isn't publicly available "\
                 "yet.\n\n"\
                 "If you think your zip code is wrong, use /start to "\
                 "configure a new one." % (E_cry, name[query.data], zip)
@@ -262,7 +263,7 @@ def handleQueryLimit(update, context):
     context.user_data["queryLimit"] = query.data
     reply = ""
     if query.data == "none":
-        reply = "Removed query limit - showing all remaining colletion dates "\
+        reply = "Removed query limit - showing all remaining collection dates "\
             "for each query in the future."
     else:
         reply = "Query limit is set to %s now." % query.data
@@ -373,7 +374,7 @@ def trashbot(token):
 
 
 if __name__ == '__main__':
-    logger.info("Parsing configfile")
+    logger.info("Parsing configuration file")
     config = configparser.ConfigParser()
     config.read("config.ini")
 
