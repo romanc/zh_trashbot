@@ -14,7 +14,7 @@ Steps to deploy (a copy of) this bot include
 
 - clone this repository,
 - [install uv](https://docs.astral.sh/uv/getting-started/installation/) for project management,
-- setup python: `uv install python`,
+- setup python: `uv python install`,
 - install the project: `uv sync --all-extras --dev`
 - get a [Telegram bot token](https://core.telegram.org/bots#creating-a-new-bot)
 - create a config file: `mv config.ini.example config.ini` and configure the token in it
