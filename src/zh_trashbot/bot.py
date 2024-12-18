@@ -34,18 +34,27 @@ E_unsure = "\U0001F615"
 E_wave = "\U0001F44B"
 
 CHOOSE, HANDLE_LIMIT, ZIPCODE = range(3)
-CURRENT_VERSION = "1.1.0"
+CURRENT_VERSION = "1.2.2"
 
 WhatsNew = {
-    "1.2.0":
-        ["Use `/next %s` as a shortcut to query paper collections directly" % E_paper,
+    "1.2.2": [
+        "Software & project maintenance",
+    ],
+    "1.2.1": [
+        "Update to current version of openERZ API",
+    ],
+    "1.2.0": [
+        "Use `/next %s` as a shortcut to query paper collections directly" % E_paper,
         "Deprecated textile %s collection dates" % E_textile,
-        "Minor code cleanups"],
-    "1.1.0":
-        ["Use /configure %s to set a query limit and see more the one collection date" % E_gear,
-         "What's new messages %s" % E_grin,
-         "Various text improvements",
-         "Some code cleanup"]}
+        "Minor code cleanups",
+    ],
+    "1.1.0": [
+        "Use /configure %s to set a query limit and see more the one collection date" % E_gear,
+        "What's new messages %s" % E_grin,
+        "Various text improvements",
+        "Some code cleanup",
+    ]
+}
 
 
 def newerVersionExists(userVersion):
@@ -366,7 +375,7 @@ def trashbot(token):
 if __name__ == '__main__':
     logger.info("Parsing configfile")
     config = configparser.ConfigParser()
-    config.read("../config.ini")
+    config.read("config.ini")
 
     logger.info("Running Züri Trash Bot")
     trashbot(config['api.telegram.org']['token'])

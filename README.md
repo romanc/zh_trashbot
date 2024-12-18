@@ -8,10 +8,14 @@ Visit [https://t.me/zh_trashbot](https://t.me/zh_trashbot) or use `@zh_trashbot`
 
 ## Deployment
 
-You don't need to deploy the bot to use it. For using the bot, just follow the link above. If - for whatever reason - you want to deploy (a copy of) this bot, you will need to:
+You don't need to deploy the bot to use it. For using the bot, just follow [this link](https://t.me/zh_trashbot).
+
+Steps to deploy (a copy of) this bot include
 
 - clone this repository,
-- create a virtual environment (use python 3.6 or later),
-- install the dependencies (into your virtual environment): `pip install -r requirements.txt`,
-- copy `config.ini.example` to `config.ini`, get a [Telegram bot token](https://core.telegram.org/bots#creating-a-new-bot) and configure it in `config.ini`,
-- run `python trashbot.py`  from within the `src/` folder (or submit a PR to fix the fact that we currently have a hard-coded relative path to the config file)
+- [install uv](https://docs.astral.sh/uv/getting-started/installation/) for project management,
+- setup python: `uv install python`,
+- install the project: `uv sync --all-extras --dev`
+- get a [Telegram bot token](https://core.telegram.org/bots#creating-a-new-bot)
+- create a config file: `mv config.ini.example config.ini` and configure the token in it
+- run the bot: `uv run src/zh_trashbot/bot.py`
