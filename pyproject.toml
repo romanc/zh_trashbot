@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "zh-trashbot"
-version = "1.2.2"
+version = "1.2.3"
 description = "Züri Trash Bot is a convenient way to query paper and cardboard collection dates for people living in Zürich."
 requires-python = ">=3.8"
 dependencies = [

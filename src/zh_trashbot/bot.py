@@ -34,9 +34,12 @@ E_unsure = "\U0001F615"
 E_wave = "\U0001F44B"
 
 CHOOSE, HANDLE_LIMIT, ZIPCODE = range(3)
-CURRENT_VERSION = "1.2.2"
+CURRENT_VERSION = "1.2.3"
 
 WhatsNew = {
+    "1.2.3": [
+        "Fix name resolution when no collection is found",
+    ],
     "1.2.2": [
         "Software & project maintenance",
         "Fixed typos",
@@ -187,7 +190,7 @@ def queryCollectionAPI(choice, user_data):
                 "message if the new year's data isn't publicly available "\
                 "yet.\n\n"\
                 "If you think your zip code is wrong, use /start to "\
-                "configure a new one." % (E_cry, name[query.data], zip)
+                "configure a new one." % (name[choice], E_cry, zip)
             return notFound
 
         nextDate = ""
