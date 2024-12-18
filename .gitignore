@@ -1,11 +1,10 @@
 # python venv
-venv
+.venv
 
 # config file with settings
 config.ini
 
 # user data
-src/trashbot_data
+trashbot_data
 
 ideas.md
-

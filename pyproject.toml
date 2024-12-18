@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zh-trashbot"
+version = "1.2.2"
+description = "Züri Trash Bot is a convenient way to query paper and cardboard collection dates for people living in Zürich."
+requires-python = ">=3.8"
+dependencies = [
+    "python-telegram-bot==12.8"
+]
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+authors = [
+    {name = "romanc"}
+]
+maintainers = [
+    {name = "romanc"}
+]
+keywords = ["Züri", "telegram", "bot", "waste", "trash", "collection", "recycling"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+
+  "Intended Audience :: End Users/Desktop",
+  "Topic :: Communications :: Chat",
+  "Topic :: Home Automation",
+  "Topic :: Utilities",
+  "Natural Language :: English",
+
+  "License :: OSI Approved :: MIT License",
+
+  "Programming Language :: Python :: 3.8",
+]
+
+[project.urls]
+Homepage = "https://cattaneo.coffee/zh_trashbot/"
+Repository = "https://github.com/romanc/zh_trashbot"
+Issues = "https://github.com/romanc/zh_trashbot/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/zh_trashbot"]
